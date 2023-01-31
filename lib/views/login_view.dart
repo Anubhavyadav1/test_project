@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/main.dart';
+import 'package:test_project/views/verify_email_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -63,6 +64,13 @@ class _LoginViewState extends State<LoginView> {
                 password: password,
               );
               print(userCredentials);
+              final user = FirebaseAuth.instance.currentUser;
+              if (user?.emailVerified ?? false) {
+                print("verified");
+              } else {
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil("/verify/", (route) => false);
+              }
             } on FirebaseAuthException catch (e) {
               if (e.code == "user-not-found") {
                 print("User Not Found");
