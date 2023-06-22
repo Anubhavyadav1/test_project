@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:test_project/constants/routes.dart';
 import 'package:test_project/firebase_options.dart';
 import 'package:test_project/views/login_view.dart';
 import 'package:test_project/views/register_view.dart';
@@ -16,10 +17,10 @@ void main() {
     ),
     home: const HomePage(),
     routes: {
-      '/login/': (context) => const LoginView(),
-      '/register/': (context) => const RegisterView(),
-      '/verify/': (context) => const VerifyEmailView(),
-      '/notes/': (context) => const NotesView(),
+      loginRoute: (context) => const LoginView(),
+      registerRoute: (context) => const RegisterView(),
+      verifyRoute: (context) => const VerifyEmailView(),
+      notesRoute: (context) => const NotesView(),
     },
   ));
 }
@@ -78,7 +79,7 @@ class _NotesViewState extends State<NotesView> {
                     if (shouldLogout) {
                       FirebaseAuth.instance.signOut();
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/login/',
+                        loginRoute,
                         (_) => false,
                       );
                     }
@@ -95,7 +96,7 @@ class _NotesViewState extends State<NotesView> {
             )
           ],
         ),
-        body: const Text("logged in"));
+        body: const Text("Logged in"));
   }
 }
 
@@ -117,7 +118,7 @@ Future<bool> showLogOutDailog(BuildContext context) {
             onPressed: () {
               Navigator.of(context).pop(true);
             },
-            child: const Text('Sign Out'),
+            child: const Text('Log Out'),
           )
         ],
       );
