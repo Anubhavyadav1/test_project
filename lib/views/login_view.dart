@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:test_project/constants/routes.dart';
 import 'package:test_project/main.dart';
 import 'package:test_project/views/verify_email_view.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -63,21 +65,24 @@ class _LoginViewState extends State<LoginView> {
                 email: email,
                 password: password,
               );
-              print(userCredentials);
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                notesRoute,
+                (route) => false,
+              );
               final user = FirebaseAuth.instance.currentUser;
               if (user?.emailVerified ?? false) {
-                print("verified");
+                devtools.log("verified");
               } else {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil("/verify/", (route) => false);
+                    .pushNamedAndRemoveUntil(verifyRoute, (route) => false);
               }
             } on FirebaseAuthException catch (e) {
               if (e.code == "user-not-found") {
-                print("User Not Found");
+                devtools.log("User Not Found");
               } else {
-                print("something else occurred");
+                devtools.log("something else occurred");
               }
-              print(e.code);
+              devtools.log(e.code);
             }
           },
           style: const ButtonStyle(),
@@ -86,7 +91,7 @@ class _LoginViewState extends State<LoginView> {
         TextButton(
           onPressed: () {
             Navigator.of(context).pushNamedAndRemoveUntil(
-              '/register/',
+              registerRoute,
               (route) => false,
             );
           },
