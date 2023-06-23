@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test_project/constants/routes.dart';
-import 'package:test_project/main.dart';
-import 'package:test_project/views/verify_email_view.dart';
 import 'dart:developer' as devtools show log;
+import '../utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -60,8 +59,7 @@ class _LoginViewState extends State<LoginView> {
             final email = _email.text;
             final password = _password.text;
             try {
-              final userCredentials =
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+              await FirebaseAuth.instance.signInWithEmailAndPassword(
                 email: email,
                 password: password,
               );
@@ -69,20 +67,32 @@ class _LoginViewState extends State<LoginView> {
                 notesRoute,
                 (route) => false,
               );
-              final user = FirebaseAuth.instance.currentUser;
-              if (user?.emailVerified ?? false) {
-                devtools.log("verified");
-              } else {
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(verifyRoute, (route) => false);
-              }
             } on FirebaseAuthException catch (e) {
               if (e.code == "user-not-found") {
                 devtools.log("User Not Found");
+                await showErrorDialog(
+                  context,
+                  'User not found',
+                );
+              } else if (e.code == "wrong-password") {
+                devtools.log("Wrong Password");
+                await showErrorDialog(
+                  context,
+                  "Wrong Password",
+                );
               } else {
-                devtools.log("something else occurred");
+                devtools.log(e.code);
+                await showErrorDialog(
+                  context,
+                  'Error: ${e.code}',
+                );
               }
-              devtools.log(e.code);
+            } catch (e) {
+              devtools.log(e.toString());
+              await showErrorDialog(
+                context,
+                e.toString(),
+              );
             }
           },
           style: const ButtonStyle(),
